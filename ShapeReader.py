@@ -456,7 +456,8 @@ def create_plot(event: NuclearEvent, output_filename: str, event_number: int, in
     # Add text information
     info_text = (
         f'Protons: {file_params["number_of_protons"]}, Neutrons: {file_params["number_of_neutrons"]}\n'
-        f'Excitation Energy: {file_params["excitation_energy"]} MeV, Angular Momentum: {file_params["angular_momentum"]}ℏ\n'
+        f'Excitation Energy: {file_params["excitation_energy"]} MeV\n'
+        f'Angular Momentum: {file_params["angular_momentum"]}ℏ\n\n'
         f'Event Category: {event.event_category}\n'
         f'Step Count: {event.step_count}\n\n'
         f'Mass: {event.mass:.4f}\n'
