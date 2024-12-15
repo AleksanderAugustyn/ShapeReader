@@ -540,7 +540,7 @@ def main():
 
     input_file = sys.argv[1]
     files_created = 0
-    max_files = 1000
+    max_files = 100
 
     try:
         with open(input_file) as f:
