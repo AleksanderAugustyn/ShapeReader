@@ -492,6 +492,8 @@ def main():
         sys.exit(1)
 
     input_file = sys.argv[1]
+    files_created = 0
+    max_files = 100
 
     try:
         with open(input_file, 'r') as f:
@@ -513,6 +515,11 @@ def main():
 
                     create_plot(event, output_filename)
                     print(f"Saved plot as {output_filename}")
+                    
+                    files_created += 1
+                    if files_created >= max_files:
+                        print(f"\nReached limit of {max_files} files. Stopping.")
+                        break
 
                 except ValueError as e:
                     print(f"Error processing line {line_number}: {e}")
