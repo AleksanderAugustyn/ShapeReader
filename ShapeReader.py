@@ -353,7 +353,7 @@ def create_plot(event: NuclearEvent, output_filename: str, event_number: int, in
     inputFilename (str): Name of the input file for extracting parameters
     """
     # Create figure with two subplots
-    fig = plt.figure(figsize=(15, 8))
+    fig = plt.figure(figsize=(18, 9.6))
     ax_plot = fig.add_subplot(121)
     ax_text = fig.add_subplot(122)
     ax_text.axis('off')
