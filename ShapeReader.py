@@ -342,7 +342,7 @@ def find_nearest_point(plot_x, plot_y, angle):
     return plot_x[nearest_index], plot_y[nearest_index]
 
 
-def create_plot(event: NuclearEvent, outputFilename: str, eventNumber: int, input_filename: str):
+def create_plot(event: NuclearEvent, output_filename: str, event_number: int, input_filename: str):
     """
     Create and save a plot for the given nuclear event.
 
@@ -469,7 +469,9 @@ def create_plot(event: NuclearEvent, outputFilename: str, eventNumber: int, inpu
         f'β30: {event.beta_parameters[2]:.4f}\n'
         f'β40: {event.beta_parameters[3]:.4f}\n'
         f'β50: {event.beta_parameters[4]:.4f}\n'
-        f'β60: {event.beta_parameters[5]:.4f}\n\n'
+        f'β60: {event.beta_parameters[5]:.4f}\n'
+        f'β70: 0.0000\n'
+        f'β80: 0.0000\n\n'
         f'Fission Parameters:\n'
         f'Theta: {event.fission_theta:.4f}°\n'
         f'Ratio: {event.fission_ratio:.4f}\n\n'
@@ -494,8 +496,8 @@ def create_plot(event: NuclearEvent, outputFilename: str, eventNumber: int, inpu
     ax_text.text(0.1, 0.95, info_text, fontsize=12, verticalalignment='top')
 
     # Save the plot with event number in filename
-    baseFilename = outputFilename.rsplit('.', 1)[0]
-    newFilename = f"{eventNumber:d}_{baseFilename}.png"
+    baseFilename = output_filename.rsplit('.', 1)[0]
+    newFilename = f"{event_number:d}_{baseFilename}.png"
     plt.savefig(newFilename, dpi=300, bbox_inches='tight')
     plt.close(fig)
 
