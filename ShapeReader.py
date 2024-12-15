@@ -1,6 +1,7 @@
 """This script reads nuclear shape parameters from a file and generates plots."""
 
 import sys
+import os
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib
@@ -498,9 +499,16 @@ def create_plot(event: NuclearEvent, output_filename: str, event_number: int, in
 
     ax_text.text(0.1, 0.95, info_text, fontsize=12, verticalalignment='top')
 
+    # Create directory name from nuclear parameters
+    params = parse_filename(input_filename)
+    dir_name = f"{params['number_of_protons']}_{params['number_of_neutrons']}_{params['excitation_energy']}_{params['angular_momentum']}"
+    
+    # Create directory if it doesn't exist
+    os.makedirs(dir_name, exist_ok=True)
+    
     # Save the plot with event number in filename
     baseFilename = output_filename.rsplit('.', 1)[0]
-    newFilename = f"{event_number:d}_{baseFilename}.png"
+    newFilename = f"{dir_name}/{event_number:d}_{baseFilename}.png"
     plt.savefig(newFilename, dpi=600, bbox_inches='tight')
     plt.close(fig)
 
