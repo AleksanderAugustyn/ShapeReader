@@ -495,7 +495,7 @@ def create_plot(event: NuclearEvent, outputFilename: str, eventNumber: int, inpu
 
     # Save the plot with event number in filename
     baseFilename = outputFilename.rsplit('.', 1)[0]
-    newFilename = f"{eventNumber:04d}_{baseFilename}.png"
+    newFilename = f"{eventNumber:d}_{baseFilename}.png"
     plt.savefig(newFilename, dpi=300, bbox_inches='tight')
     plt.close(fig)
 
