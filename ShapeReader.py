@@ -530,13 +530,13 @@ def main():
         print("Usage: python ShapeReader.py <input_file>")
         sys.exit(1)
 
-    inputFile = sys.argv[1]
-    filesCreated = 0
-    maxFiles = 10
+    input_file = sys.argv[1]
+    files_created = 0
+    max_files = 1000
 
     try:
-        with open(inputFile) as f:
-            for lineNumber, line in enumerate(f, 1):
+        with open(input_file) as f:
+            for line_number, line in enumerate(f, 1):
                 try:
                     # Parse the event data
                     event = parse_line(line)
@@ -548,24 +548,24 @@ def main():
                         f"{event.number_of_neutrons}_{event.step_count}_{beta_values}.png"
                     )
 
-                    print(f"Processing line {lineNumber}: {event.event_category}, "
+                    print(f"Processing line {line_number}: {event.event_category}, "
                           f"Z={event.number_of_protons}, N={event.number_of_protons}, "
                           f"Step={event.step_count}")
 
-                    create_plot(event, outputFilename, lineNumber, inputFile)
-                    print(f"Saved plot as {lineNumber:01d}_{outputFilename}")
+                    create_plot(event, outputFilename, line_number, input_file)
+                    print(f"Saved plot as {line_number:01d}_{outputFilename}")
 
-                    filesCreated += 1
-                    if filesCreated >= maxFiles:
-                        print(f"\nReached limit of {maxFiles} files. Stopping.")
+                    files_created += 1
+                    if files_created >= max_files:
+                        print(f"\nReached limit of {max_files} files. Stopping.")
                         break
 
                 except ValueError as e:
-                    print(f"Error processing line {lineNumber}: {e}")
+                    print(f"Error processing line {line_number}: {e}")
                     continue
 
     except FileNotFoundError:
-        print(f"Error: Input file '{inputFile}' not found")
+        print(f"Error: Input file '{input_file}' not found")
         sys.exit(1)
 
 
