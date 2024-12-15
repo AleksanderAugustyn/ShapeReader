@@ -342,13 +342,15 @@ def find_nearest_point(plot_x, plot_y, angle):
     return plot_x[nearest_index], plot_y[nearest_index]
 
 
-def create_plot(event: NuclearEvent, output_filename: str):
+def create_plot(event: NuclearEvent, outputFilename: str, eventNumber: int, input_filename: str):
     """
     Create and save a plot for the given nuclear event.
 
     Args:
-    :parameter event (NuclearEvent): Nuclear event parameters
-    :parameter output_filename (str): Name of the output file
+    event (NuclearEvent): Nuclear event parameters
+    outputFilename (str): Name of the output file
+    eventNumber (int): Number of the event (line number)
+    inputFilename (str): Name of the input file for extracting parameters
     """
     # Create figure with two subplots
     fig = plt.figure(figsize=(15, 8))
@@ -356,7 +358,8 @@ def create_plot(event: NuclearEvent, output_filename: str):
     ax_text = fig.add_subplot(122)
     ax_text.axis('off')
 
-    # print(event.beta_parameters)
+    # Parse input filename for additional parameters
+    file_params = parse_filename(input_filename)
 
     # Get complete beta parameters including zeros for β70 and β80
     full_beta_parameters = event.get_full_beta_parameters()
@@ -377,13 +380,23 @@ def create_plot(event: NuclearEvent, output_filename: str):
     y_axis_positive = find_nearest_point(plot_x, plot_y, np.pi / 2)
     y_axis_negative = find_nearest_point(plot_x, plot_y, -np.pi / 2)
 
-    # Draw axis lines
+    # Draw axis lines and set labels
     ax_plot.plot([x_axis_negative[0], x_axis_positive[0]],
                  [x_axis_negative[1], x_axis_positive[1]],
                  color='red', label='X-axis')
     ax_plot.plot([y_axis_negative[0], y_axis_positive[0]],
                  [y_axis_negative[1], y_axis_positive[1]],
                  color='blue', label='Y-axis')
+
+    # Calculate and add text for nuclear parameters
+    nuclear_params = (
+        f'Z={file_params["number_of_protons"]}, N={file_params["number_of_neutrons"]}\n'
+        f'E*={file_params["excitation_energy"]} MeV, J={file_params["angular_momentum"]}ℏ\n'
+        f'Event Category: {event.event_category}'
+    )
+
+    # Add title with nuclear parameters
+    ax_plot.set_title(nuclear_params, fontsize=16, pad=20)
 
     # Calculate and draw necks
     neck_thickness_45_135, neck_x_45_135, neck_y_45_135 = find_neck_thickness(
@@ -480,9 +493,30 @@ def create_plot(event: NuclearEvent, output_filename: str):
 
     ax_text.text(0.1, 0.95, info_text, fontsize=12, verticalalignment='top')
 
-    # Save the plot
-    plt.savefig(output_filename, dpi=300, bbox_inches='tight')
+    # Save the plot with event number in filename
+    baseFilename = outputFilename.rsplit('.', 1)[0]
+    newFilename = f"{eventNumber:04d}_{baseFilename}.png"
+    plt.savefig(newFilename, dpi=300, bbox_inches='tight')
     plt.close(fig)
+
+
+def parse_filename(filename):
+    """
+    Parse the input filename to extract nuclear parameters.
+
+    Args:
+    filename (str): Input filename in format "Z_N_E_J_xxxxx_FG_x.x_Endpoints.txt"
+
+    Returns:
+    dict: Dictionary containing the parsed parameters
+    """
+    parts = filename.split('_')
+    return {
+        'number_of_protons': int(parts[0]),
+        'number_of_neutrons': int(parts[1]),
+        'excitation_energy': float(parts[2]),
+        'angular_momentum': int(parts[3])
+    }
 
 
 def main():
@@ -491,42 +525,42 @@ def main():
         print("Usage: python ShapeReader.py <input_file>")
         sys.exit(1)
 
-    input_file = sys.argv[1]
-    files_created = 0
-    max_files = 100
+    inputFile = sys.argv[1]
+    filesCreated = 0
+    maxFiles = 10
 
     try:
-        with open(input_file, 'r') as f:
-            for line_number, line in enumerate(f, 1):
+        with open(inputFile) as f:
+            for lineNumber, line in enumerate(f, 1):
                 try:
                     # Parse the event data
                     event = parse_line(line)
 
                     # Generate output filename using only the available beta parameters
                     beta_values = "_".join(f"{p:.2f}" for p in event.beta_parameters)
-                    output_filename = (
+                    outputFilename = (
                         f"{event.event_category}_{event.number_of_protons}_"
                         f"{event.number_of_neutrons}_{event.step_count}_{beta_values}.png"
                     )
 
-                    print(f"Processing line {line_number}: {event.event_category}, "
-                          f"Z={event.number_of_protons}, N={event.number_of_neutrons}, "
+                    print(f"Processing line {lineNumber}: {event.event_category}, "
+                          f"Z={event.number_of_protons}, N={event.number_of_protons}, "
                           f"Step={event.step_count}")
 
-                    create_plot(event, output_filename)
-                    print(f"Saved plot as {output_filename}")
-                    
-                    files_created += 1
-                    if files_created >= max_files:
-                        print(f"\nReached limit of {max_files} files. Stopping.")
+                    create_plot(event, outputFilename, lineNumber, inputFile)
+                    print(f"Saved plot as {lineNumber:01d}_{outputFilename}")
+
+                    filesCreated += 1
+                    if filesCreated >= maxFiles:
+                        print(f"\nReached limit of {maxFiles} files. Stopping.")
                         break
 
                 except ValueError as e:
-                    print(f"Error processing line {line_number}: {e}")
+                    print(f"Error processing line {lineNumber}: {e}")
                     continue
 
     except FileNotFoundError:
-        print(f"Error: Input file '{input_file}' not found")
+        print(f"Error: Input file '{inputFile}' not found")
         sys.exit(1)
 
 
